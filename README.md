@@ -48,7 +48,6 @@ RND=$RANDOM
 GRP="rg-mcp-obo-lab-$RND"
 LOC="eastus2"
 STG="stmcplab$RND"
-PLAN="plan-mcp-serverless-$RND"
 FUNC="func-mcp-api-$RND"
 APIM="apim-mcp-gw-$RND"
 EMAIL="admin@yourdomain.com" # Change to your real email
@@ -61,15 +60,13 @@ az group create --name $GRP --location $LOC
 echo "Creating Storage Account..."
 az storage account create --name $STG --location $LOC --resource-group $GRP --sku Standard_LRS
 
-# 3. Create Hosting Plan (Consumption/Serverless - Zero/Low Cost)
-echo "Creating App Service Plan..."
-az functionapp plan create --name $PLAN --resource-group $GRP --location $LOC --sku Y1 --is-linux
+# 3. Create the Function App with Consumption Plan (Python 3.11)
+# Note: For Linux consumption plan, we use --consumption-plan-location instead of creating a separate plan
+# This automatically creates a serverless consumption plan (zero/low cost)
+echo "Creating Function App with Consumption Plan: $FUNC..."
+az functionapp create --name $FUNC --storage-account $STG --consumption-plan-location $LOC --resource-group $GRP --runtime python --runtime-version 3.11 --functions-version 4 --os-type Linux
 
-# 4. Create the Function App (Python 3.11)
-echo "Creating Function App: $FUNC..."
-az functionapp create --name $FUNC --storage-account $STG --plan $PLAN --resource-group $GRP --runtime python --runtime-version 3.11 --functions-version 4 --os-type Linux
-
-# 5. Create API Management (Consumption Tier)
+# 4. Create API Management (Consumption Tier)
 echo "Provisioning APIM (This may take a few minutes)..."
 az apim create --name $APIM --resource-group $GRP --location $LOC --publisher-name "MCP Lab Admin" --publisher-email $EMAIL --sku-name Consumption_0
 ```
