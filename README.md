@@ -98,7 +98,11 @@ az ad app update --id $BACKEND_APP_ID --identifier-uris "api://$BACKEND_APP_ID"
 # User.Read Role ID: e1fe6dd8-ba31-4d61-89e7-88639da4683d
 az ad app permission add --id $BACKEND_APP_ID --api 00000003-0000-0000-c000-000000000000 --api-permissions e1fe6dd8-ba31-4d61-89e7-88639da4683d=Scope
 
-# 6. Display Credentials (COPY THESE VALUES)
+# 6. Grant the delegated permission (makes the permission effective)
+echo "Granting delegated permission..."
+az ad app permission grant --id $BACKEND_APP_ID --api 00000003-0000-0000-c000-000000000000
+
+# 7. Display Credentials (COPY THESE VALUES)
 echo "------------------------------------------------"
 echo "Backend Client ID: $BACKEND_APP_ID"
 echo "Backend Client Secret: $BACKEND_SECRET"
