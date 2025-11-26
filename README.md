@@ -6,7 +6,7 @@
 
 Below is a short demo animation illustrating the main function in this repository.
 
-![Demo](./mcp-apim-entraid-obo-function.gif)
+![Lab APIM MCP](./apip-mcp-labl.svg)
 
 **Usage**
 
