@@ -100,7 +100,7 @@ az ad app permission add --id $BACKEND_APP_ID --api 00000003-0000-0000-c000-0000
 
 # 6. Grant the delegated permission (makes the permission effective)
 echo "Granting delegated permission..."
-az ad app permission grant --id $BACKEND_APP_ID --api 00000003-0000-0000-c000-000000000000
+az ad app permission grant --id $BACKEND_APP_ID --api 00000003-0000-0000-c000-000000000000 --scope User.Read
 
 # 7. Display Credentials (COPY THESE VALUES)
 echo "------------------------------------------------"
