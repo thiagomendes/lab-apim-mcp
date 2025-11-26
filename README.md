@@ -68,7 +68,7 @@ az functionapp create --name $FUNC --storage-account $STG --consumption-plan-loc
 
 # 4. Create API Management (Consumption Tier)
 echo "Provisioning APIM (This may take a few minutes)..."
-az apim create --name $APIM --resource-group $GRP --location $LOC --publisher-name "MCP Lab Admin" --publisher-email $EMAIL --sku-name Consumption_0
+az apim create --name $APIM --resource-group $GRP --location $LOC --publisher-name "MCP Lab Admin" --publisher-email $EMAIL --sku-name Consumption
 ```
 
 ## 4. Phase 2: Identity Configuration (Microsoft Entra ID)
