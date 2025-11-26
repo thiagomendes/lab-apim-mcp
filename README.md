@@ -102,7 +102,29 @@ az ad app permission add --id $BACKEND_APP_ID --api 00000003-0000-0000-c000-0000
 echo "Granting delegated permission..."
 az ad app permission grant --id $BACKEND_APP_ID --api 00000003-0000-0000-c000-000000000000 --scope User.Read
 
-# 7. Display Credentials (COPY THESE VALUES)
+# 7. Expose an API scope (MCP.Execute) for client applications to request
+echo "Adding MCP.Execute scope..."
+SCOPE_ID=$(uuidgen)
+cat > scope.json <<EOF
+{
+  "oauth2Permissions": [
+    {
+      "adminConsentDescription": "Access to MCP",
+      "adminConsentDisplayName": "Access to MCP",
+      "id": "$SCOPE_ID",
+      "isEnabled": true,
+      "type": "User",
+      "userConsentDescription": "Access to MCP",
+      "userConsentDisplayName": "Access to MCP",
+      "value": "MCP.Execute"
+    }
+  ]
+}
+EOF
+az ad app update --id $BACKEND_APP_ID --set api=@scope.json
+rm scope.json
+
+# 8. Display Credentials (COPY THESE VALUES)
 echo "------------------------------------------------"
 echo "Backend Client ID: $BACKEND_APP_ID"
 echo "Backend Client Secret: $BACKEND_SECRET"
@@ -110,18 +132,16 @@ echo "Tenant ID: $(az account show --query tenantId -o tsv)"
 echo "------------------------------------------------"
 ```
 
-### 4.2 Mandatory Manual Action (Azure Portal)
+### 4.2 Grant Admin Consent (Azure Portal)
 
-Due to limitations in automating consent via CLI for quick Labs:
+The `MCP.Execute` scope has been automatically created via CLI. However, you need to grant admin consent:
 
 1. Access the **Azure Portal** > **Microsoft Entra ID** > **App registrations**
 2. Locate the app `mcp-lab-backend-<RND>`
-3. Go to **Expose an API** > **+ Add a scope**
-   - **Scope name**: `MCP.Execute`
-   - **Who can consent**: Admins and users
-   - Fill in the description fields with "Access to MCP" and Save
-4. Go to **API Permissions**
-5. Click the **Grant admin consent for <Your Organization>** button. This authorizes the backend to read the Graph profile without UI interaction (which does not exist in the MCP flow)
+3. Go to **API Permissions**
+4. Click the **Grant admin consent for <Your Organization>** button. This authorizes the backend to read the Graph profile without UI interaction (which does not exist in the MCP flow)
+
+**Note**: You can verify the `MCP.Execute` scope was created by checking **Expose an API** in the app registration. The scope `api://{BACKEND_APP_ID}/MCP.Execute` should be visible.
 
 ## 5. Phase 3: MCP Server Development (Python)
 
