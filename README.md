@@ -107,7 +107,7 @@ echo "Adding MCP.Execute scope..."
 SCOPE_ID=$(uuidgen)
 cat > scope.json <<EOF
 {
-  "oauth2Permissions": [
+  "oauth2PermissionScopes": [
     {
       "adminConsentDescription": "Access to MCP",
       "adminConsentDisplayName": "Access to MCP",
