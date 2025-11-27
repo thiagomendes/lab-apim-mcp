@@ -38,9 +38,74 @@ Ensure you have the following tools installed and configured:
 - **Python 3.10+** and `pip`
 - **Visual Studio Code** (with the "GitHub Copilot" extension active, if available, or ready for MCP configuration)
 
-## 3. Phase 1: Infrastructure Provisioning (Azure CLI)
+## 3. Setup Scripts (Recommended for Multiple Lab Executions)
+
+For labs that will be executed multiple times with different resource names, we provide helper scripts to simplify environment configuration.
+
+### 3.1 Initial Setup
+
+Navigate to the `mcp-lab` folder and use the environment setup script:
+
+```bash
+cd mcp-lab
+
+# Option 1: Auto-detect existing resources or generate new suffix
+source env-setup.sh
+
+# Option 2: Use specific suffix for new deployment
+source env-setup.sh abc123
+
+# Option 3: Use specific suffix for existing deployment
+source env-setup.sh xyz789
+```
+
+The `env-setup.sh` script will:
+- Set all environment variables (RND, GRP, FUNC, APIM, etc.)
+- Auto-detect existing resources if no suffix is provided
+- Load BACKEND_APP_ID if the app registration exists
+- Display all configured values
+
+**Important**: If you need the BACKEND_SECRET and it wasn't just created, you'll need to regenerate it:
+
+```bash
+export BACKEND_SECRET=$(az ad app credential reset --id $BACKEND_APP_ID --display-name "OBOSecret" --query password -o tsv)
+```
+
+### 3.2 Configure Function App Settings (After Deployment)
+
+Once your Function App is deployed, use the helper script to configure the application settings:
+
+```bash
+# Make sure environment variables are loaded first
+source env-setup.sh
+
+# If needed, set or regenerate the backend secret
+export BACKEND_SECRET=$(az ad app credential reset --id $BACKEND_APP_ID --display-name "OBOSecret" --query password -o tsv)
+
+# Configure the Function App
+./configure-function.sh
+```
+
+The `configure-function.sh` script will:
+- Validate all required environment variables
+- Display the settings that will be applied
+- Configure AZURE_TENANT_ID, BACKEND_CLIENT_ID, and BACKEND_CLIENT_SECRET
+
+### 3.3 Benefits for Multiple Executions
+
+These scripts provide:
+- **Reusability**: Easily switch between different lab deployments
+- **Safety**: Validates variables before executing commands
+- **Clarity**: Shows exactly what will be configured
+- **Flexibility**: Works with new or existing resources
+
+---
+
+## 4. Phase 1: Infrastructure Provisioning (Azure CLI)
 
 Run the commands below in your terminal (Bash/WSL) to create the base infrastructure. We use a random suffix to ensure unique names.
+
+**Note**: If you're using the helper scripts from Section 3, the variables below will already be set. You can skip directly to running the `az` commands.
 
 ```bash
 # --- Global Variables Configuration ---
@@ -71,7 +136,7 @@ echo "Provisioning APIM (This may take a few minutes)..."
 az apim create --name $APIM --resource-group $GRP --location $LOC --publisher-name "MCP Lab Admin" --publisher-email $EMAIL --sku-name Consumption
 ```
 
-## 4. Phase 2: Identity Configuration (Microsoft Entra ID)
+## 5. Phase 2: Identity Configuration (Microsoft Entra ID)
 
 This step is critical for the OBO flow to work. We will create two identities: one for the Backend (API) and another for the Client (VS Code).
 
@@ -143,7 +208,7 @@ The `MCP.Execute` scope has been automatically created via CLI. However, you nee
 
 **Note**: You can verify the `MCP.Execute` scope was created by checking **Expose an API** in the app registration. The scope `api://{BACKEND_APP_ID}/MCP.Execute` should be visible.
 
-## 5. Phase 3: MCP Server Development (Python)
+## 6. Phase 3: MCP Server Development (Python)
 
 Create a local folder for the project and add the files below.
 
@@ -278,6 +343,28 @@ Runtime configuration for Azure Functions. This minimal configuration is require
 
 In the terminal, inside the project folder:
 
+#### Option A: Using the Helper Script (Recommended)
+
+```bash
+# Navigate to mcp-lab folder
+cd mcp-lab
+
+# Load environment variables
+source env-setup.sh
+
+# Set or regenerate backend secret if needed
+export BACKEND_SECRET=$(az ad app credential reset --id $BACKEND_APP_ID --display-name "OBOSecret" --query password -o tsv)
+
+# Configure Function App settings
+./configure-function.sh
+
+# Publish code (from the function project folder)
+cd ..
+func azure functionapp publish $FUNC
+```
+
+#### Option B: Manual Configuration
+
 ```bash
 # 1. Configure Environment Variables in Azure
 az functionapp config appsettings set \
@@ -292,7 +379,7 @@ az functionapp config appsettings set \
 func azure functionapp publish $FUNC
 ```
 
-## 6. Phase 4: Gateway Configuration (APIM)
+## 7. Phase 4: Gateway Configuration (APIM)
 
 APIM will protect the Function, validating the token before invoking the Python code.
 
@@ -359,7 +446,7 @@ Apply the policy via CLI:
 az apim api policy update --service-name $APIM --resource-group $GRP --api-id mcp-backend --xml-content @policy.xml
 ```
 
-## 7. Phase 5: Client Configuration (VS Code)
+## 8. Phase 5: Client Configuration (VS Code)
 
 Since VS Code does not yet have a native OAuth login flow for generic MCP servers, we will use manual token injection to validate the lab.
 
