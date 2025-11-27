@@ -260,16 +260,33 @@ async def get_my_latest_email(ctx: Context) -> str:
         return f"Exception connecting to Graph: {str(e)}"
 ```
 
+### 5.4 host.json
+
+Runtime configuration for Azure Functions. This minimal configuration is required.
+
+```json
+{
+  "version": "2.0",
+  "extensionBundle": {
+    "id": "Microsoft.Azure.Functions.ExtensionBundle",
+    "version": "[4.*, 5.0.0)"
+  }
+}
+```
+
 ### 5.5 Function Deployment
 
 In the terminal, inside the project folder:
 
 ```bash
 # 1. Configure Environment Variables in Azure
-az functionapp config appsettings set --name $FUNC --resource-group $GRP --settings \
-  AZURE_TENANT_ID=$(az account show --query tenantId -o tsv) \
-  BACKEND_CLIENT_ID=$BACKEND_APP_ID \
-  BACKEND_CLIENT_SECRET=$BACKEND_SECRET
+az functionapp config appsettings set \
+  --name $FUNC \
+  --resource-group $GRP \
+  --settings \
+    AZURE_TENANT_ID=$(az account show --query tenantId -o tsv) \
+    BACKEND_CLIENT_ID=$BACKEND_APP_ID \
+    BACKEND_CLIENT_SECRET=$BACKEND_SECRET
 
 # 2. Publish Code
 func azure functionapp publish $FUNC
