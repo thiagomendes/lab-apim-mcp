@@ -115,7 +115,7 @@ APIM has native support for MCP servers (GenAI Gateway). We will do this via the
 
 1. Go to the **Azure Portal** > **API Management** (`$APIM`).
 2. In the left menu, select **MCP Servers**.
-3. Click **+ Create** > **Connect an existing MCP server** (or just fill the form).
+3. Click **+ Create** > **Expose an existing MCP server**.
 4. Fill in the form fields as follows:
 
    **Backend MCP server**
