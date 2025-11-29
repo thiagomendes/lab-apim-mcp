@@ -114,18 +114,18 @@ az apim create --name $APIM --resource-group $GRP --location $LOC --publisher-na
 APIM has native support for MCP servers (GenAI Gateway). We will do this via the Portal.
 
 1. Go to the **Azure Portal** > **API Management** (`$APIM`).
-2. In the left menu, select **MCP Servers (preview)**.
+2. In the left menu, select **MCP Servers**.
 3. Click **+ Create** > **Connect an existing MCP server** (or just fill the form).
 4. Fill in the form fields as follows:
 
    **Backend MCP server**
-   *   **MCP server base url**: `https://<YOUR_FUNCTION_NAME>.azurewebsites.net`
-       *(Replace `<YOUR_FUNCTION_NAME>` with `$FUNC`. Do NOT add `/api` at the end).*
+   *   **MCP server base url**: `https://<YOUR_FUNCTION_NAME>.azurewebsites.net/mcp`
+       *(Replace `<YOUR_FUNCTION_NAME>` with `$FUNC`.*
 
    **New MCP server**
    *   **Display name**: `MCP Lab Gateway`
    *   **Name**: `mcp-lab`
-   *   **Base path**: `mcp`
+   *   **Base path**: `lab`
    *   **Description**: `Azure Function acting as MCP Server`
 
 5. Click **Create**.
@@ -139,7 +139,7 @@ Now let's point VS Code to APIM.
    {
      "mcpServers": {
        "azure-apim-gw": {
-         "url": "https://<YOUR_APIM_NAME>.azure-api.net/mcp",
+         "url": "https://<YOUR_APIM_NAME>.azure-api.net/lab/mcp",
          "type": "http"
        }
      }
@@ -187,7 +187,7 @@ echo "Backend App ID: $BACKEND_APP_ID"
 
 Let's configure APIM to reject calls without a token.
 
-1. In the Portal, go to **MCP Servers (preview)** > Click on **MCP Lab Gateway**.
+1. In the Portal, go to **MCP Servers** > Click on **MCP Lab Gateway**.
 2. Look for the **Policies** option (or the `</>` icon in **Inbound processing**).
 3. Insert the validation policy in the `<inbound>` block:
 
@@ -231,9 +231,12 @@ The Function needs permission to "speak on behalf of the user" (OBO).
 # 1. Generate Secret for the App
 BACKEND_SECRET=$(az ad app credential reset --id $BACKEND_APP_ID --display-name "OBOSecret" --query password -o tsv)
 
-# 2. Grant Graph permission (User.Read)
-az ad app permission add --id $BACKEND_APP_ID --api 00000003-0000-0000-c000-000000000000 --api-permissions e1fe6dd8-ba31-4d61-89e7-88639da4683d=Scope
-az ad app permission grant --id $BACKEND_APP_ID --api 00000003-0000-0000-c000-000000000000 --scope User.Read
+# 2. Grant Graph permission (User.Read) using Global IDs
+MS_GRAPH_ID="00000003-0000-0000-c000-000000000000" # Microsoft Graph API
+USER_READ_ID="e1fe6dd8-ba31-4d61-89e7-88639da4683d" # User.Read Scope
+
+az ad app permission add --id $BACKEND_APP_ID --api $MS_GRAPH_ID --api-permissions $USER_READ_ID=Scope
+az ad app permission grant --id $BACKEND_APP_ID --api $MS_GRAPH_ID --scope User.Read
 ```
 
 ### 4.2 Configure the Function App
@@ -280,7 +283,7 @@ We need a real token.
    {
      "mcpServers": {
        "azure-obo-final": {
-         "url": "https://<YOUR_APIM_NAME>.azure-api.net/mcp",
+         "url": "https://<YOUR_APIM_NAME>.azure-api.net/lab/mcp",
          "type": "http",
          "headers": {
            "Authorization": "Bearer YOUR_LONG_TOKEN_HERE"
@@ -307,5 +310,3 @@ The tool should respond with **"Success! OBO Flow worked"**, displaying your Nam
 ```bash
 az group delete --name $GRP --yes --no-wait
 ```
-*Don't forget to delete your resources to avoid costs:*
-`az group delete --name $GRP --yes --no-wait`
