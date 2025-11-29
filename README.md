@@ -1,4 +1,4 @@
-# Journey: From Zero to Zero Trust with MCP and Azure APIM
+# MCP + Azure APIM Zero-Trust Architecture Full Hands-On Lab
 
 This lab is designed as a story in **4 Acts**. You will start by deploying a simple MCP server in the cloud and evolve your architecture until you reach a complex enterprise scenario with identity validation and the On-Behalf-Of (OBO) flow.
 
