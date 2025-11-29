@@ -301,5 +301,11 @@ The tool should respond with **"Success! OBO Flow worked"**, displaying your Nam
 
 ---
 **Congratulations!** You have completed the journey.
+
+### Cleanup
+*Don't forget to delete all resources created during this lab to avoid ongoing costs.*
+```bash
+az group delete --name $GRP --yes --no-wait
+```
 *Don't forget to delete your resources to avoid costs:*
 `az group delete --name $GRP --yes --no-wait`
