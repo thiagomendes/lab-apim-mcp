@@ -211,6 +211,8 @@ Let's configure APIM to reject calls without a token.
 ```
 *(Replace `{{YOUR_TENANT_ID}}` and `{{YOUR_BACKEND_APP_ID}}` with real values).*
 
+*If you don't know your Tenant ID, run az account show to retrieve it.*
+
 ### 3.3 Security Test (Expected Failure)
 
 Try using `@azure-apim-gw echo_message` again in VS Code.
