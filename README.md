@@ -81,7 +81,7 @@ Let's validate if the MCP server is alive by testing the simple tool.
    {
      "mcpServers": {
        "azure-func-direct": {
-         "url": "https://<YOUR_FUNCTION_NAME>.azurewebsites.net",
+         "url": "https://<YOUR_FUNCTION_NAME>.azurewebsites.net/mcp",
          "type": "http"
        }
      }
