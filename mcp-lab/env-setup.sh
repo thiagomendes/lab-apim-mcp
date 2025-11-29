@@ -22,12 +22,12 @@ else
 
     if [ -n "$DETECTED_RG" ]; then
         export RND=$(echo $DETECTED_RG | sed 's/rg-mcp-obo-lab-//')
-        echo -e "${GREEN}✓ Resource group detectado:${NC} $DETECTED_RG"
-        echo -e "${GREEN}✓ Sufixo extraído:${NC} $RND"
+        echo -e "${GREEN}[OK] Resource group detectado:${NC} $DETECTED_RG"
+        echo -e "${GREEN}[OK] Sufixo extraído:${NC} $RND"
     else
         # Gera um novo sufixo aleatório
         export RND=$(openssl rand -hex 3)
-        echo -e "${YELLOW}! Nenhum resource group encontrado. Gerando novo sufixo:${NC} $RND"
+        echo -e "${YELLOW}[WARN] Nenhum resource group encontrado. Gerando novo sufixo:${NC} $RND"
     fi
 fi
 
@@ -52,27 +52,27 @@ echo -e "\n${YELLOW}Buscando informações do Backend App...${NC}"
 export BACKEND_APP_ID=$(az ad app list --display-name "mcp-lab-backend-$RND" --query [0].appId -o tsv 2>/dev/null)
 
 if [ -n "$BACKEND_APP_ID" ] && [ "$BACKEND_APP_ID" != "null" ]; then
-    echo -e "${GREEN}✓ Backend App encontrado:${NC} $BACKEND_APP_ID"
-    echo -e "${RED}⚠ BACKEND_SECRET não pode ser recuperado automaticamente.${NC}"
+    echo -e "${GREEN}[OK] Backend App encontrado:${NC} $BACKEND_APP_ID"
+    echo -e "${RED}[WARN] BACKEND_SECRET não pode ser recuperado automaticamente.${NC}"
     echo -e "${YELLOW}  Se você precisa do secret, defina manualmente:${NC}"
     echo -e "  export BACKEND_SECRET=\"your-secret-here\""
     echo -e "  ${YELLOW}ou regenere com:${NC}"
     echo -e "  export BACKEND_SECRET=\$(az ad app credential reset --id $BACKEND_APP_ID --display-name \"OBOSecret\" --query password -o tsv)"
 else
-    echo -e "${YELLOW}! Backend App não encontrado. Será necessário criar.${NC}"
+    echo -e "${YELLOW}[WARN] Backend App não encontrado. Será necessário criar.${NC}"
 fi
 
 # Pega o Tenant ID
 export AZURE_TENANT_ID=$(az account show --query tenantId -o tsv)
-echo -e "\n${GREEN}✓ Azure Tenant ID:${NC} $AZURE_TENANT_ID"
+echo -e "\n${GREEN}[OK] Azure Tenant ID:${NC} $AZURE_TENANT_ID"
 
 # Busca o App ID do Azure CLI (aplicativo de primeira parte da Microsoft)
 echo -e "\n${YELLOW}Buscando App ID do 'Microsoft Azure CLI'...${NC}"
 export AZURE_CLI_APP_ID=$(az ad sp show --id 04b07795-8ddb-461a-bbee-02f9e1bf7b46 --query appId -o tsv 2>/dev/null)
 if [ -n "$AZURE_CLI_APP_ID" ] && [ "$AZURE_CLI_APP_ID" != "null" ]; then
-    echo -e "${GREEN}✓ Azure CLI App ID detectado:${NC} $AZURE_CLI_APP_ID"
+    echo -e "${GREEN}[OK] Azure CLI App ID detectado:${NC} $AZURE_CLI_APP_ID"
 else
-    echo -e "${RED}! Não foi possível detectar o App ID do Azure CLI. Usando valor padrão.${NC}"
+    echo -e "${RED}[WARN] Não foi possível detectar o App ID do Azure CLI. Usando valor padrão.${NC}"
     export AZURE_CLI_APP_ID="04b07795-8ddb-461a-bbee-02f9e1bf7b46"
 fi
 

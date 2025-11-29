@@ -46,7 +46,7 @@ To ensure resource names are unique and reproducible, we will use a setup script
 
 ---
 
-## 🎬 Act 1: The Birth of the MCP Server
+## Act 1: The Birth of the MCP Server
 
 In this phase, your goal is simple: get an MCP server running in the cloud (Azure Functions) and publicly accessible.
 
@@ -97,7 +97,7 @@ Let's validate if the MCP server is alive by testing the simple tool.
 
 ---
 
-## 🎬 Act 2: The Guardian (Azure MCP Gateway)
+## Act 2: The Guardian (Azure MCP Gateway)
 
 Accessing the Function directly is insecure and hard to manage. Let's put **Azure API Management (APIM)** in front to act as an Intelligent MCP Gateway.
 
@@ -153,7 +153,7 @@ Now let's point VS Code to APIM.
 
 ---
 
-## 🎬 Act 3: Identity & Security
+## Act 3: Identity & Security
 
 Now let's lock the door. No one should call the APIM without a valid badge (JWT Token).
 
@@ -219,7 +219,7 @@ Try using `@azure-apim-gw echo_message` again in VS Code.
 
 ---
 
-## 🎬 Act 4: The On-Behalf-Of (OBO) Flow
+## Act 4: The On-Behalf-Of (OBO) Flow
 
 The "Grand Finale". We will make VS Code send a token, APIM validate it, and the Function exchange this token for another to read your Profile.
 
