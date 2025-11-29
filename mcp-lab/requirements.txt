@@ -1,0 +1,7 @@
+azure-functions
+fastmcp
+msal
+requests
+werkzeug<3.1.2
+pydantic>=2.0.0
+openapi-core>=0.19.0
