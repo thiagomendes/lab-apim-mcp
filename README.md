@@ -130,6 +130,8 @@ APIM has native support for MCP servers (GenAI Gateway). We will do this via the
 
 5. Click **Create**.
 
+*Note: This setup uses a public backend endpoint for simplicity. In production, always isolate your Function App using Private Endpoints or VNet restrictions to prevent direct access.*
+
 ### 2.3 Test via Gateway
 
 Now let's point VS Code to APIM.
